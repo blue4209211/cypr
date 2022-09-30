@@ -32,7 +32,7 @@ func (g *UuidCommand) Init(args []string) error {
 }
 
 func (g *UuidCommand) Run() (err error) {
-	s, err := uuid.New()
+	s := uuid.New()
 	fmt.Println(s.String())
 	return err
 }
