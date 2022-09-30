@@ -11,6 +11,9 @@ import (
 func root(args []string) (cmd internal.Command, e error) {
 	cmds := []internal.Command{
 		internal.NewAesCommand(),
+		internal.NewBase32Command(),
+		internal.NewHexCommand(),
+		internal.NewHexCommand(),
 	}
 
 	if len(args) < 1 {
