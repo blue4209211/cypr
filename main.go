@@ -12,8 +12,11 @@ func root(args []string) (cmd internal.Command, e error) {
 	cmds := []internal.Command{
 		internal.NewAesCommand(),
 		internal.NewBase32Command(),
+		internal.NewBase64Command(),
 		internal.NewHexCommand(),
-		internal.NewHexCommand(),
+		internal.NewMd5Command(),
+		internal.NewPasswordCommand(),
+		internal.NewUuidCommand(),
 	}
 
 	if len(args) < 1 {

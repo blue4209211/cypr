@@ -49,13 +49,13 @@ func (g *AesCommand) Run() (err error) {
 			return errors.New("data not provided")
 		}
 
-		s, err := g.encryptAES(g.fs.Arg(0))
+		s, err := g.encrypt(g.fs.Arg(0))
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
 	} else if g.op == "decrypt" {
-		s, err := g.decryptAES(g.fs.Arg(0))
+		s, err := g.decrypt(g.fs.Arg(0))
 		if err != nil {
 			return err
 		}
@@ -73,7 +73,7 @@ func (g *AesCommand) getKey() ([]byte, error) {
 	return hex.DecodeString(g.key)
 }
 
-func (g *AesCommand) encryptAES(stringToEncrypt string) (s string, err error) {
+func (g *AesCommand) encrypt(stringToEncrypt string) (s string, err error) {
 	key, err := g.getKey()
 	if err != nil {
 		return s, err
@@ -116,7 +116,7 @@ func (g *AesCommand) encryptAES(stringToEncrypt string) (s string, err error) {
 	return s, err
 }
 
-func (g *AesCommand) decryptAES(encryptedString string) (s string, err error) {
+func (g *AesCommand) decrypt(encryptedString string) (s string, err error) {
 	key, err := g.getKey()
 	if err != nil {
 		return s, err
