@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/blue420211/cypr/internal"
 )
@@ -19,11 +20,21 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewUuidCommand(),
 	}
 
+	cmdsStr := []string{}
+	for _, c := range cmds {
+		cmdsStr = append(cmdsStr, c.Name())
+	}
+	cmdsStr = append(cmdsStr, "help")
+
 	if len(args) < 1 {
-		return cmd, errors.New("you must pass a sub-command - ")
+		return cmd, errors.New("you must pass a sub-command - " + strings.Join(cmdsStr, ","))
 	}
 
 	subcommand := os.Args[1]
+
+	if subcommand == "help" {
+		return cmd, errors.New("you must pass a sub-command - " + strings.Join(cmdsStr, ","))
+	}
 
 	for _, cmd := range cmds {
 		if cmd.Name() == subcommand {
@@ -41,5 +52,6 @@ func main() {
 		fmt.Println(err)
 		fmt.Println("-------------------")
 		c.Flag().Usage()
+		os.Exit(-1)
 	}
 }
