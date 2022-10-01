@@ -16,7 +16,9 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewBase64Command(),
 		internal.NewHexCommand(),
 		internal.NewMd5Command(),
-		internal.NewPasswordCommand(),
+		internal.NewSha1Command(),
+		internal.NewSha256Command(),
+		internal.NewRandCommand(),
 		internal.NewUuidCommand(),
 	}
 
@@ -51,7 +53,9 @@ func main() {
 	if c, err := root(os.Args[1:]); err != nil {
 		fmt.Println(err)
 		fmt.Println("-------------------")
-		c.Flag().Usage()
+		if c != nil {
+			c.Flag().Usage()
+		}
 		os.Exit(-1)
 	}
 }
