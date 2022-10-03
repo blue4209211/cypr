@@ -73,6 +73,19 @@ func (g *AesCommand) getKey() ([]byte, error) {
 	return hex.DecodeString(g.key)
 }
 
+func (g *AesCommand) getNonce(size int) (nonce []byte, err error) {
+	if g.nonce == "" {
+		return nonce, err
+	}
+	nonce, err = hex.DecodeString(g.nonce)
+	if err != nil {
+		return nonce, errors.New("invalid nonce - " + err.Error())
+	} else if len(nonce) != size {
+		return nonce, fmt.Errorf("nonce size (%d) is not equal to agm size (%d)", len(nonce), size)
+	}
+	return nonce, err
+}
+
 func (g *AesCommand) encrypt(stringToEncrypt string) (s string, err error) {
 	key, err := g.getKey()
 	if err != nil {
@@ -95,12 +108,13 @@ func (g *AesCommand) encrypt(stringToEncrypt string) (s string, err error) {
 	}
 
 	//Create a nonce. Nonce should be from GCM
-	var nonce []byte
 	var prefix []byte
+	nonce, err := g.getNonce(aesGCM.NonceSize())
+	if err != nil {
+		return s, err
+	}
 
-	if g.nonce != "" {
-		nonce = []byte(nonce)
-	} else {
+	if len(nonce) == 0 {
 		nonce = make([]byte, aesGCM.NonceSize())
 		if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 			return s, err
@@ -139,18 +153,19 @@ func (g *AesCommand) decrypt(encryptedString string) (s string, err error) {
 		return s, err
 	}
 
-	var nonce []byte
 	var ciphertext []byte
+	nonce, err := g.getNonce(aesGCM.NonceSize())
+	if err != nil {
+		return s, err
+	}
 
-	if g.nonce != "" {
-		nonce = []byte(g.nonce)
-		ciphertext = enc
-	} else {
+	if len(nonce) == 0 {
 		//Get the nonce size
 		nonceSize := aesGCM.NonceSize()
 		//Extract the nonce from the encrypted data
 		nonce, ciphertext = enc[:nonceSize], enc[nonceSize:]
-
+	} else {
+		ciphertext = enc
 	}
 
 	//Decrypt the data
