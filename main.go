@@ -20,6 +20,7 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewSha256Command(),
 		internal.NewRandCommand(),
 		internal.NewUuidCommand(),
+		internal.NewUrlCommand(),
 	}
 
 	cmdsStr := []string{}

@@ -58,12 +58,12 @@ func (g *Base64Command) Run() (err error) {
 }
 
 func (g *Base64Command) encode(decoded string) (s string, err error) {
-	s = base64.RawStdEncoding.EncodeToString([]byte(decoded))
+	s = base64.StdEncoding.EncodeToString([]byte(decoded))
 	return s, err
 }
 
 func (g *Base64Command) decode(encoded string) (s string, err error) {
-	data, err := base64.RawStdEncoding.DecodeString(encoded)
+	data, err := base64.StdEncoding.DecodeString(encoded)
 	if err != nil {
 		return s, err
 	}
