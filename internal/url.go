@@ -12,7 +12,9 @@ func NewUrlCommand() *UrlCommand {
 		fs: flag.NewFlagSet("url", flag.ContinueOnError),
 	}
 
-	gc.fs.StringVar(&gc.op, "op", "encode", "encrypt/decrypt values")
+	gc.fs.Usage = func() {
+		fmt.Printf("Usage of %s : <encode/decode> <value> \n", gc.fs.Name())
+	}
 
 	return gc
 }
@@ -20,7 +22,8 @@ func NewUrlCommand() *UrlCommand {
 type UrlCommand struct {
 	fs *flag.FlagSet
 
-	op string
+	op   string
+	args []string
 }
 
 func (g *UrlCommand) Flag() flag.FlagSet {
@@ -32,22 +35,28 @@ func (g *UrlCommand) Name() string {
 }
 
 func (g *UrlCommand) Init(args []string) error {
-	return g.fs.Parse(args)
+	err := g.fs.Parse(args)
+	if err != nil {
+		return err
+	}
+	if g.fs.NArg() != 2 {
+		return errors.New("invalid args")
+	}
+
+	g.op = g.fs.Arg(0)
+	g.args = g.fs.Args()[1:]
+	return nil
 }
 
 func (g *UrlCommand) Run() (err error) {
 	if g.op == "encode" {
-		if g.fs.NArg() == 0 {
-			return errors.New("data not provided")
-		}
-
-		s, err := g.encode(g.fs.Arg(0))
+		s, err := g.encode(g.args[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
 	} else if g.op == "decode" {
-		s, err := g.decode(g.fs.Arg(0))
+		s, err := g.decode(g.args[0])
 		if err != nil {
 			return err
 		}

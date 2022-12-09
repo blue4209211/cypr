@@ -12,6 +12,11 @@ func NewSha1Command() *Sha1Command {
 	gc := &Sha1Command{
 		fs: flag.NewFlagSet("sha1", flag.ContinueOnError),
 	}
+
+	gc.fs.Usage = func() {
+		fmt.Printf("Usage of %s : <value> \n", gc.fs.Name())
+	}
+
 	return gc
 }
 

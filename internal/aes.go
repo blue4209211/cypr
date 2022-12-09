@@ -16,7 +16,11 @@ func NewAesCommand() *AesCommand {
 		fs: flag.NewFlagSet("aes", flag.ContinueOnError),
 	}
 
-	gc.fs.StringVar(&gc.op, "op", "encrypt", "encrypt/decrypt values")
+	gc.fs.Usage = func() {
+		fmt.Printf("Usage of %s : <encrypt/decrypt> [args] <value> \n Args:\n", gc.fs.Name())
+		gc.fs.PrintDefaults()
+	}
+
 	gc.fs.StringVar(&gc.key, "key", "", "Aes Key (Hex), required")
 	gc.fs.StringVar(&gc.nonce, "nonce", "", "12 bytes nonce value (optional) if not provided then random nonce will be used and appended to cypher text")
 
@@ -26,9 +30,10 @@ func NewAesCommand() *AesCommand {
 type AesCommand struct {
 	fs *flag.FlagSet
 
-	op    string
-	key   string
-	nonce string
+	op     string
+	opArgs []string
+	key    string
+	nonce  string
 }
 
 func (g *AesCommand) Flag() flag.FlagSet {
@@ -40,22 +45,29 @@ func (g *AesCommand) Name() string {
 }
 
 func (g *AesCommand) Init(args []string) error {
-	return g.fs.Parse(args)
+	err := g.fs.Parse(args)
+	if err != nil {
+		return err
+	}
+
+	if g.fs.NArg() != 2 {
+		return errors.New("invalid args")
+	}
+	g.op = g.fs.Args()[0]
+	g.opArgs = g.fs.Args()[1:]
+
+	return nil
 }
 
 func (g *AesCommand) Run() (err error) {
 	if g.op == "encrypt" {
-		if g.fs.NArg() == 0 {
-			return errors.New("data not provided")
-		}
-
-		s, err := g.encrypt(g.fs.Arg(0))
+		s, err := g.encrypt(g.opArgs[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
 	} else if g.op == "decrypt" {
-		s, err := g.decrypt(g.fs.Arg(0))
+		s, err := g.decrypt(g.opArgs[0])
 		if err != nil {
 			return err
 		}

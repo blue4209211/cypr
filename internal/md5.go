@@ -13,6 +13,10 @@ func NewMd5Command() *Md5Command {
 		fs: flag.NewFlagSet("md5", flag.ContinueOnError),
 	}
 
+	gc.fs.Usage = func() {
+		fmt.Printf("Usage of %s : <value> \n", gc.fs.Name())
+	}
+
 	return gc
 }
 

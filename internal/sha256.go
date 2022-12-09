@@ -12,6 +12,11 @@ func NewSha256Command() *Sha256Command {
 	gc := &Sha256Command{
 		fs: flag.NewFlagSet("sha256", flag.ContinueOnError),
 	}
+
+	gc.fs.Usage = func() {
+		fmt.Printf("Usage of %s : <value> \n", gc.fs.Name())
+	}
+
 	return gc
 }
 
