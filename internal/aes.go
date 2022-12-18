@@ -45,16 +45,20 @@ func (g *AesCommand) Name() string {
 }
 
 func (g *AesCommand) Init(args []string) error {
-	err := g.fs.Parse(args)
+	if len(args) < 2 {
+		return fmt.Errorf("invalid args - %v", args)
+	}
+	g.op = args[0]
+
+	err := g.fs.Parse(args[1:])
 	if err != nil {
 		return err
 	}
 
-	if g.fs.NArg() != 2 {
-		return errors.New("invalid args")
+	if g.fs.NArg() != 1 {
+		return fmt.Errorf("invalid args - %v", g.fs.Args())
 	}
-	g.op = g.fs.Args()[0]
-	g.opArgs = g.fs.Args()[1:]
+	g.opArgs = g.fs.Args()
 
 	return nil
 }

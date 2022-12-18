@@ -21,6 +21,7 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewRandCommand(),
 		internal.NewUuidCommand(),
 		internal.NewUrlCommand(),
+		internal.NewDateCommand(),
 	}
 
 	cmdsStr := []string{}
@@ -41,7 +42,10 @@ func root(args []string) (cmd internal.Command, e error) {
 
 	for _, cmd := range cmds {
 		if cmd.Name() == subcommand {
-			cmd.Init(os.Args[2:])
+			err := cmd.Init(os.Args[2:])
+			if err != nil {
+				return cmd, fmt.Errorf("%v", err)
+			}
 			return cmd, cmd.Run()
 		}
 	}

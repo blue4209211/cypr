@@ -35,15 +35,15 @@ func (g *Base64Command) Name() string {
 }
 
 func (g *Base64Command) Init(args []string) error {
-	err := g.fs.Parse(args)
+	g.op = args[0]
+	err := g.fs.Parse(args[1:])
 	if err != nil {
 		return err
 	}
-	if g.fs.NArg() != 2 {
+	if g.fs.NArg() != 1 {
 		return errors.New("invalid args")
 	}
-	g.op = g.fs.Args()[0]
-	g.opArgs = g.fs.Args()[1:]
+	g.opArgs = g.fs.Args()
 	return nil
 }
 

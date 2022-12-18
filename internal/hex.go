@@ -35,15 +35,15 @@ func (g *HexCommand) Name() string {
 }
 
 func (g *HexCommand) Init(args []string) error {
+	g.op = args[0]
 	err := g.fs.Parse(args)
 	if err != nil {
 		return err
 	}
-	if g.fs.NArg() != 2 {
+	if g.fs.NArg() != 1 {
 		return errors.New("invalid args")
 	}
-	g.op = g.fs.Arg(0)
-	g.opArgs = g.fs.Args()[1:]
+	g.opArgs = g.fs.Args()
 	return nil
 }
 
