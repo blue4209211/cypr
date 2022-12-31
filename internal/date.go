@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strconv"
@@ -50,25 +51,55 @@ func (g *DateCommand) Init(args []string) error {
 	return nil
 }
 
+func parseDateOrTime(s string) (t time.Time, f string, err error) {
+	formats := map[string]string{
+		"2006-01-02T15:04:05Z07:00": "datetime",
+		"2006-01-02T15:04:05 MST":   "datetime",
+		"3:04PM":                    "time",
+		"3:04PM MST":                "time",
+		"15:04 MST":                 "time",
+		"15:04":                     "time",
+	}
+	for k, f := range formats {
+		if f == "time" {
+			t, err = time.Parse("2006-01-02 "+k, "2006-01-02 "+s)
+		} else {
+			t, err = time.Parse(k, s)
+		}
+		if err == nil {
+			return t, f, err
+		}
+	}
+	return t, f, errors.New("unable to parse date/time")
+}
+
 func (g *DateCommand) Run() (err error) {
 	current := time.Now()
+	currentTz, _ := current.Zone()
+	format := "datetime"
 	if len(g.opArgs) > 0 {
 		nixTime, err := strconv.ParseInt(g.opArgs[0], 10, 64)
 		if err == nil {
 			current = time.UnixMilli(nixTime)
 		} else {
-			current, err = time.Parse(time.RFC3339, g.opArgs[0])
+			current2, f, err := parseDateOrTime(g.opArgs[0])
 			if err != nil {
 				return err
 			}
-
+			current = current2.In(current.Location())
+			format = f
 		}
 	}
 
-	currentTz, _ := current.Zone()
-	fmt.Printf("Local(%v) - %v \n", currentTz, current)
-	fmt.Printf("UTC - %v \n", current.UTC())
-	fmt.Printf("Unix Milli - %v \n", current.UnixMilli())
+	timeFormat := "15:04"
+	if format == "datetime" {
+		fmt.Printf("Local(%v) - %v \n", currentTz, current)
+		fmt.Printf("UTC - %v \n", current.UTC())
+		fmt.Printf("Unix Milli - %v \n", current.UnixMilli())
+	} else {
+		fmt.Printf("Local(%v) - %v \n", currentTz, current.Format(timeFormat))
+		fmt.Printf("UTC - %v \n", current.UTC().Format(timeFormat))
+	}
 	if len(g.tz) > 0 {
 		fmt.Printf("---------- \n")
 		for _, t := range strings.Split(g.tz, ",") {
@@ -89,7 +120,11 @@ func (g *DateCommand) Run() (err error) {
 			if err != nil {
 				return err
 			}
-			fmt.Printf("%s - %v \n", t, c)
+			if format == "datetime" {
+				fmt.Printf("%s - %v \n", t, c)
+			} else {
+				fmt.Printf("%s - %v \n", t, c.Format(timeFormat))
+			}
 		}
 	}
 
