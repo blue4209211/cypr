@@ -51,9 +51,7 @@ func (g *Md5Command) Run() (err error) {
 
 func (g *Md5Command) encrypt(stringToEncrypt string) (s string, err error) {
 
-	plaintext := []byte(stringToEncrypt)
-
-	data := md5.Sum(plaintext)
-
-	return hex.EncodeToString(data[:]), err
+	h := md5.New()
+	h.Write([]byte(stringToEncrypt))
+	return hex.EncodeToString(h.Sum(nil)), err
 }

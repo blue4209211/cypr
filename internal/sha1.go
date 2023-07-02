@@ -51,9 +51,7 @@ func (g *Sha1Command) Run() (err error) {
 
 func (g *Sha1Command) encrypt(stringToEncrypt string) (s string, err error) {
 
-	plaintext := []byte(stringToEncrypt)
-
-	data := sha1.Sum(plaintext)
-
-	return hex.EncodeToString(data[:]), err
+	h := sha1.New()
+	h.Write([]byte(stringToEncrypt))
+	return hex.EncodeToString(h.Sum(nil)), err
 }
