@@ -22,6 +22,7 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewUuidCommand(),
 		internal.NewUrlCommand(),
 		internal.NewDateCommand(),
+		internal.NewJwtCommand(),
 	}
 
 	cmdsStr := []string{}
