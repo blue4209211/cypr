@@ -23,6 +23,7 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewUrlCommand(),
 		internal.NewDateCommand(),
 		internal.NewJwtCommand(),
+		internal.NewHtmlCommand(),
 		internal.NewBcryptCommand(),
 	}
 
