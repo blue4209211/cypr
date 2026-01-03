@@ -7,3 +7,5 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/tkuchiki/go-timezone v0.2.2
 )
+
+require golang.org/x/crypto v0.46.0

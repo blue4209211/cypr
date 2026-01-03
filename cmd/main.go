@@ -24,6 +24,7 @@ func root(args []string) (cmd internal.Command, e error) {
 		internal.NewDateCommand(),
 		internal.NewJwtCommand(),
 		internal.NewHtmlCommand(),
+		internal.NewBcryptCommand(),
 	}
 
 	cmdsStr := []string{}
