@@ -47,15 +47,16 @@ func (g *BcryptCommand) Init(args []string) error {
 		return err
 	}
 
-	if g.op == "hash" {
+	switch g.op {
+	case "hash":
 		if g.fs.NArg() != 1 {
 			return errors.New("invalid args, password required")
 		}
-	} else if g.op == "verify" {
+	case "verify":
 		if g.fs.NArg() != 2 {
 			return errors.New("invalid args, hash and password required")
 		}
-	} else {
+	default:
 		return fmt.Errorf("unknown operation: %s", g.op)
 	}
 
@@ -64,9 +65,10 @@ func (g *BcryptCommand) Init(args []string) error {
 }
 
 func (g *BcryptCommand) Run() error {
-	if g.op == "hash" {
+	switch g.op {
+	case "hash":
 		return g.hash(g.opArgs[0])
-	} else if g.op == "verify" {
+	case "verify":
 		return g.verify(g.opArgs[0], g.opArgs[1])
 	}
 	return nil

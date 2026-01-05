@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            os: ubuntu-latest
+          - goos: linux
+            goarch: arm64
+            os: ubuntu-latest
+          - goos: windows
+            goarch: amd64
+            os: ubuntu-latest
+          - goos: darwin
+            goarch: amd64
+            os: macos-latest
+          - goos: darwin
+            goarch: arm64
+            os: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Import Apple Code Signing Certificates
+        if: matrix.goos == 'darwin' && secrets.MACOS_CERTIFICATE != ''
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          OUTPUT_NAME=cypr-${{ matrix.goos }}-${{ matrix.goarch }}
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            OUTPUT_NAME+=".exe"
+          fi
+
+          go build -v -o $OUTPUT_NAME ./cmd/main.go
+
+          if [ "${{ matrix.goos }}" = "darwin" ] && [ -n "${{ secrets.MACOS_CERTIFICATE }}" ]; then
+            echo "Signing binary..."
+            codesign --force --options runtime --sign "$MACOS_CERTIFICATE_NAME" "$OUTPUT_NAME"
+          fi
+        env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: cypr-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

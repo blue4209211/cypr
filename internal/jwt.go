@@ -60,7 +60,8 @@ func (g *JwtCommand) Init(args []string) error {
 		return err
 	}
 
-	if g.op == "encode" {
+	switch g.op {
+	case "encode":
 		if g.fs.NArg() != 3 {
 			return errors.New("invalid args, header, payload and algo required")
 		}
@@ -69,11 +70,11 @@ func (g *JwtCommand) Init(args []string) error {
 				return errors.New("private key and public key paths are required for RS256")
 			}
 		}
-	} else if g.op == "decode" {
+	case "decode":
 		if g.fs.NArg() != 1 {
 			return errors.New("invalid args, token required")
 		}
-	} else {
+	default:
 		return fmt.Errorf("unknown operation: %s", g.op)
 	}
 
@@ -82,19 +83,20 @@ func (g *JwtCommand) Init(args []string) error {
 }
 
 func (g *JwtCommand) Run() (err error) {
-	if g.op == "encode" {
+	switch g.op {
+	case "encode":
 		s, err := g.encode(g.opArgs[0], g.opArgs[1], g.opArgs[2])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else if g.op == "decode" {
+	case "decode":
 		s, err := g.decode(g.opArgs[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else {
+	default:
 		err = errors.New("Unknown Op - " + g.op)
 	}
 	return err
