@@ -61,8 +61,10 @@ jobs:
 
           if [ "${{ matrix.goos }}" = "darwin" ] && [ -n "${{ secrets.MACOS_CERTIFICATE }}" ]; then
             echo "Signing binary..."
-            codesign --force --options runtime --sign "${{ secrets.MACOS_CERTIFICATE_NAME }}" "$OUTPUT_NAME"
+            codesign --force --options runtime --sign "$MACOS_CERTIFICATE_NAME" "$OUTPUT_NAME"
           fi
+        env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
