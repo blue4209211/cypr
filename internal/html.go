@@ -52,19 +52,20 @@ func (g *HtmlCommand) Init(args []string) error {
 }
 
 func (g *HtmlCommand) Run() (err error) {
-	if g.op == "encode" {
+	switch g.op {
+	case "encode":
 		s, err := g.encode(g.args[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else if g.op == "decode" {
+	case "decode":
 		s, err := g.decode(g.args[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else {
+	default:
 		err = errors.New("Unknown Op - " + g.op)
 	}
 	return err
