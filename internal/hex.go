@@ -48,7 +48,8 @@ func (g *HexCommand) Init(args []string) error {
 }
 
 func (g *HexCommand) Run() (err error) {
-	if g.op == "encode" {
+	switch g.op {
+	case "encode":
 		if g.fs.NArg() == 0 {
 			return errors.New("data not provided")
 		}
@@ -58,13 +59,13 @@ func (g *HexCommand) Run() (err error) {
 			return err
 		}
 		fmt.Println(s)
-	} else if g.op == "decode" {
+	case "decode":
 		s, err := g.decode(g.opArgs[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else {
+	default:
 		err = errors.New("Unknown Op - " + g.op)
 	}
 	return err
