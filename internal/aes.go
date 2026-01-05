@@ -64,19 +64,20 @@ func (g *AesCommand) Init(args []string) error {
 }
 
 func (g *AesCommand) Run() (err error) {
-	if g.op == "encrypt" {
+	switch g.op {
+	case "encrypt":
 		s, err := g.encrypt(g.opArgs[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else if g.op == "decrypt" {
+	case "decrypt":
 		s, err := g.decrypt(g.opArgs[0])
 		if err != nil {
 			return err
 		}
 		fmt.Println(s)
-	} else {
+	default:
 		err = errors.New("Unknown Op - " + g.op)
 	}
 	return err

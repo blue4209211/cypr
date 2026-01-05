@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-	"time"
 )
 
 func NewRandCommand() *RandCommand {
@@ -49,7 +48,6 @@ func (g *RandCommand) Run() (err error) {
 }
 
 func (g *RandCommand) gen() (s string, err error) {
-	rand.Seed(time.Now().UnixNano())
 	digits := "0123456789"
 	specials := "~=+%^*/()[]{}/!@#$?|"
 	alphabets := "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz"
